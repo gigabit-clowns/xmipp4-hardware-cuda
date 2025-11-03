@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #pragma once
+
 #include <xmipp4/core/hardware/device.hpp>
+
+#include "cuda_device_memory_resource.hpp"
 
 namespace xmipp4 
 {
@@ -23,7 +26,7 @@ public:
     int get_index() const noexcept;
 
     void enumerate_memory_resources(
-        std::vector<memory_resource*> &resources // Evaluate output type
+        std::vector<memory_resource*> &resources
     ) override;
 
     bool can_access_memory_resource(
@@ -40,6 +43,7 @@ public:
 
 private:
     int m_device;
+    cuda_device_memory_resource m_memory_resource;
 
 }; 
 

@@ -4,6 +4,7 @@
 
 #include "cuda_device_queue.hpp"
 #include "cuda_event.hpp"
+#include "cuda_pinned_memory_resource.hpp"
 
 #include <memory>
 
@@ -14,6 +15,7 @@ namespace hardware
 
 cuda_device::cuda_device(int device)
     : m_device(device)
+    , m_memory_resource(*this)
 {
 }
 
@@ -26,7 +28,10 @@ void cuda_device::enumerate_memory_resources(
     std::vector<memory_resource*> &resources
 )
 {
-    resources = {}; // TODO
+    resources = {
+        &m_memory_resource,
+        &cuda_pinned_memory_resource::get()
+    };
 }
 
 bool cuda_device::can_access_memory_resource(
