@@ -3,14 +3,7 @@
 #include <xmipp4/cuda/hardware/cuda_device.hpp>
 
 #include <xmipp4/cuda/hardware/cuda_device_queue.hpp>
-#include <xmipp4/cuda/hardware/cuda_device_memory_allocator.hpp>
-#include <xmipp4/cuda/hardware/cuda_host_memory_allocator.hpp>
-#include <xmipp4/cuda/hardware/cuda_device_to_host_transfer.hpp>
-#include <xmipp4/cuda/hardware/cuda_host_to_device_transfer.hpp>
-#include <xmipp4/cuda/hardware/cuda_device_copy.hpp>
 #include <xmipp4/cuda/hardware/cuda_event.hpp>
-
-#include <xmipp4/core/hardware/device_create_parameters.hpp>
 
 #include <memory>
 
@@ -19,9 +12,8 @@ namespace xmipp4
 namespace hardware
 {
 
-cuda_device::cuda_device(int device, const device_create_parameters &params)
+cuda_device::cuda_device(int device)
     : m_device(device)
-    , m_queue_pool(device, params.get_desired_queue_count())
 {
 }
 
@@ -30,39 +22,24 @@ int cuda_device::get_index() const noexcept
     return m_device;
 }
 
-cuda_device_queue_pool& cuda_device::get_queue_pool()
+void cuda_device::enumerate_memory_resources(
+    std::vector<memory_resource*> &resources
+)
 {
-    return m_queue_pool;
+    resources = {}; // TODO
 }
 
-std::shared_ptr<device_memory_allocator> 
-cuda_device::create_device_memory_allocator()
+bool cuda_device::can_access_memory_resource(
+    const memory_resource &resource
+) const
 {
-    return std::make_shared<cuda_device_memory_allocator>(*this);
+    return false; // TODO
 }
 
-std::shared_ptr<host_memory_allocator> 
-cuda_device::create_host_memory_allocator()
+std::shared_ptr<device_queue>
+cuda_device::create_device_queue()
 {
-    return std::make_shared<cuda_host_memory_allocator>();
-}
-
-std::shared_ptr<host_to_device_transfer> 
-cuda_device::create_host_to_device_transfer()
-{
-    return std::make_shared<cuda_host_to_device_transfer>();
-}
-
-std::shared_ptr<device_to_host_transfer> 
-cuda_device::create_device_to_host_transfer()
-{
-    return std::make_shared<cuda_device_to_host_transfer>();
-}
-
-std::shared_ptr<device_copy> 
-cuda_device::create_device_copy()
-{
-    return std::make_shared<cuda_device_copy>();
+    return std::make_shared<cuda_device_queue>(*this);
 }
 
 std::shared_ptr<device_event> cuda_device::create_device_event()
