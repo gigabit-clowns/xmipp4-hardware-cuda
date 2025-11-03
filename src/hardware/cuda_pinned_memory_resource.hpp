@@ -17,7 +17,7 @@ public:
 
     memory_resource_kind get_kind() const noexcept override;
 
-    void* malloc(std::size_t size) noexcept override;
+    void* malloc(std::size_t size, std::size_t alignment) noexcept override;
 
     void free(void* ptr) noexcept override;
 

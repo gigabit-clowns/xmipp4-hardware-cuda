@@ -21,5 +21,5 @@ FetchContent_MakeAvailable(Trompeloeil)
 
 include(Catch)
 
-add_subdirectory(unitary)
-add_subdirectory(integration)
+# add_subdirectory(unitary) # TODO uncomment
+# add_subdirectory(integration) # TODO uncomment

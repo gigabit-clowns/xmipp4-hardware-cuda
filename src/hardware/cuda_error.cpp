@@ -11,10 +11,12 @@ namespace xmipp4
 namespace hardware
 {
 
-void cuda_check(cudaError_t code, 
-                const char* call, 
-                const char* file,
-                int line )
+void cuda_check(
+    cudaError_t code, 
+    const char* call, 
+    const char* file,
+    int line
+)
 {
     if (code != cudaSuccess)
     {

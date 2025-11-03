@@ -388,13 +388,14 @@ cuda_memory_block_pool::iterator create_block(
     cuda_memory_block_pool &blocks,
     cuda_memory_resource &resource,
     std::size_t size,
+    std::size_t alignment,
     const cuda_device_queue *queue
 )
 {
     cuda_memory_block_pool::iterator result;
 
     // Try to allocate
-    void* data = resource.malloc(size);
+    void* data = resource.malloc(size, alignment);
     if (data)
     {
         const cuda_memory_block_pool::iterator null;
@@ -431,7 +432,7 @@ allocate_block(
     if (ite == blocks.end())
     {
         const auto create_size = memory::align_ceil(size, create_size_step);
-        ite = create_block(blocks, resource, create_size, queue);
+        ite = create_block(blocks, resource, create_size, alignment, queue);
     }
 
     if (ite != blocks.end())

@@ -15,7 +15,7 @@ namespace hardware
 
 cuda_device::cuda_device(int device)
     : m_device(device)
-    , m_memory_resource(*this)
+    //, m_memory_resource(*this) // TODO
 {
 }
 
@@ -29,7 +29,7 @@ void cuda_device::enumerate_memory_resources(
 )
 {
     resources = {
-        &m_memory_resource,
+        // &m_memory_resource, // TODO
         &cuda_pinned_memory_resource::get()
     };
 }

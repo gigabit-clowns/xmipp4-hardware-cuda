@@ -25,8 +25,8 @@ class cuda_error
  * 
  * @param code CUDA return code
  * @param call String identifying the CUDA function call.
- * @param file File where the error ocurred.
- * @param line Line where the error ocurred.
+ * @param file File where the error occurred.
+ * @param line Line where the error occurred.
  * 
  */
 void cuda_check(cudaError_t code, 

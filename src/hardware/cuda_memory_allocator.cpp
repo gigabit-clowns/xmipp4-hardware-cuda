@@ -2,20 +2,28 @@
 
 #include "cuda_memory_allocator.hpp"
 
-#include <xmipp4/cuda/hardware/cuda_buffer.hpp>
+#include "cuda_buffer_implementation.hpp"
 
 namespace xmipp4
 {
 namespace hardware
 {
 
+XMIPP4_CONST_CONSTEXPR
+std::size_t XMIPP4_CUDA_MEMORY_REQUEST_ROUND_STEP = 512;
+XMIPP4_CONST_CONSTEXPR
+std::size_t XMIPP4_CUDA_MEMORY_ALLOCATE_ROUND_STEP = 2<<20; // 2MB
+
 cuda_memory_allocator::cuda_memory_allocator(cuda_memory_resource &resource)
     : m_resource(resource)
-    , m_cache()
+    , m_cache(
+        XMIPP4_CUDA_MEMORY_REQUEST_ROUND_STEP, 
+        XMIPP4_CUDA_MEMORY_ALLOCATE_ROUND_STEP
+    ) 
 {
 }
 
-memory_resource& cuda_memory_allocator::get_memory_resource() const noexcept
+cuda_memory_resource& cuda_memory_allocator::get_memory_resource() const noexcept
 {
     return m_resource;
 }
@@ -26,7 +34,27 @@ std::shared_ptr<buffer> cuda_memory_allocator::allocate(
     device_queue *queue
 )
 {
-    return std::make_shared<cuda_buffer>(size, alignment, queue, *this);
+    cuda_device_queue *cuda_queue = nullptr;
+    if (queue)
+    {
+        cuda_queue = &dynamic_cast<cuda_device_queue&>(*queue);
+    }
+
+    return allocate(size, alignment, cuda_queue);
+}
+
+std::shared_ptr<cuda_buffer> cuda_memory_allocator::allocate(
+    std::size_t size, 
+    std::size_t alignment, 
+    cuda_device_queue *queue
+)
+{
+    return std::make_shared<cuda_buffer_implementation>(
+        size, 
+        alignment, 
+        queue, 
+        *this
+    );
 }
 
 void cuda_memory_allocator::release_free_blocks()

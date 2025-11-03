@@ -4,6 +4,8 @@
 
 #include <xmipp4/core/hardware/memory_allocator.hpp>
 
+#include <xmipp4/cuda/hardware/cuda_memory_resource.hpp>
+
 #include "cuda_memory_block_cache.hpp"
 
 namespace xmipp4 
@@ -11,7 +13,8 @@ namespace xmipp4
 namespace hardware
 {
 
-class cuda_memory_resource;
+class cuda_device_queue;
+class cuda_buffer;
 
 class cuda_memory_allocator final
     : public memory_allocator
@@ -27,13 +30,19 @@ public:
     cuda_memory_allocator& 
     operator=(cuda_memory_allocator &&other) = default;
 
-    memory_resource& get_memory_resource() const noexcept override;
+    cuda_memory_resource& get_memory_resource() const noexcept override;
 
     std::shared_ptr<buffer> allocate(
         std::size_t size, 
         std::size_t alignment, 
         device_queue *queue
     ) override;
+
+    std::shared_ptr<cuda_buffer> allocate(
+        std::size_t size, 
+        std::size_t alignment, 
+        cuda_device_queue *queue
+    );
 
     /**
      * @brief Return free blocks to the memory resource when possible.

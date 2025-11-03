@@ -18,25 +18,27 @@ class cuda_memory_allocator;
 class cuda_memory_block;
 class cuda_memory_block_usage_tracker;
 
-class cuda_default_buffer final
+class cuda_buffer_implementation final
     : public cuda_buffer
 {
 public:
-    cuda_default_buffer(
+    cuda_buffer_implementation(
         std::size_t size, 
         std::size_t alignment, 
         cuda_device_queue *queue, 
         cuda_memory_allocator &allocator
     );
-    cuda_default_buffer(const cuda_default_buffer &other) = delete;
-    cuda_default_buffer(cuda_default_buffer &&other) noexcept;
-    ~cuda_default_buffer() override;
+    cuda_buffer_implementation(const cuda_buffer_implementation &other) = delete;
+    cuda_buffer_implementation(cuda_buffer_implementation &&other) noexcept;
+    ~cuda_buffer_implementation() override;
 
-    cuda_default_buffer& operator=(const cuda_default_buffer &other) = delete;
-    cuda_default_buffer& operator=(cuda_default_buffer &&other) noexcept;
+    cuda_buffer_implementation& 
+    operator=(const cuda_buffer_implementation &other) = delete;
+    cuda_buffer_implementation& 
+    operator=(cuda_buffer_implementation &&other) noexcept;
 
     void reset() noexcept;
-    void swap(cuda_default_buffer &other) noexcept;
+    void swap(cuda_buffer_implementation &other) noexcept;
 
     std::size_t get_size() const noexcept override;
 
@@ -56,9 +58,10 @@ private:
     std::reference_wrapper<cuda_memory_allocator> m_allocator;
     const cuda_memory_block *m_block;
     cuda_memory_block_usage_tracker *m_tracker;
+    void *m_host_ptr;
+    void *m_device_ptr;
 
 }; 
 
 } // namespace hardware
 } // namespace xmipp4
-

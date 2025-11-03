@@ -2,6 +2,7 @@
 
 #include "cuda_pinned_memory_resource.hpp"
 
+#include <xmipp4/core/memory/align.hpp>
 #include <xmipp4/cuda/hardware/cuda_error.hpp>
 
 #include <utility>
@@ -25,10 +26,20 @@ memory_resource_kind cuda_pinned_memory_resource::get_kind() const noexcept
     return memory_resource_kind::host_staging;
 }
 
-void* cuda_pinned_memory_resource::malloc(std::size_t size) noexcept
+void* cuda_pinned_memory_resource::malloc(
+    std::size_t size, 
+    std::size_t alignment
+) noexcept
 {
     void* result;
     XMIPP4_CUDA_CHECK( cudaMallocHost(&result, size) );
+
+    if (!memory::is_aligned(result, alignment))
+    {
+        XMIPP4_CUDA_CHECK( cudaFreeHost(result) );
+        result = nullptr;
+    }
+
     return result;
 }
 

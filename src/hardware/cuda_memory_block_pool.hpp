@@ -377,6 +377,7 @@ cuda_memory_block_pool::iterator create_block(
     cuda_memory_block_pool &blocks,
     cuda_memory_resource &resource,
     std::size_t size,
+    std::size_t alignment,
     const cuda_device_queue *queue 
 );
 

@@ -33,7 +33,7 @@ public:
 
     std::shared_ptr<memory_allocator> create_allocator() override;
 
-    void* malloc(std::size_t size) noexcept override;
+    void* malloc(std::size_t size, std::size_t alignment) noexcept override;
 
     void free(void* ptr) noexcept override;
 
