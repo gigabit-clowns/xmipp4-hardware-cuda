@@ -3,9 +3,11 @@
 #include "cuda_plugin.hpp"
 
 #include "hardware/cuda_device_backend.hpp"
+#include "hardware/cuda_memory_transfer_backend.hpp"
 
 #include <xmipp4/core/service_catalog.hpp>
 #include <xmipp4/core/hardware/device_manager.hpp>
+#include <xmipp4/core/hardware/memory_transfer_manager.hpp>
 
 namespace xmipp4 
 {
@@ -30,6 +32,9 @@ void cuda_plugin::register_at(service_catalog& catalog) const
 {
     hardware::cuda_device_backend::register_at(
         catalog.get_service_manager<hardware::device_manager>()
+    );
+    hardware::cuda_memory_transfer_backend::register_at(
+        catalog.get_service_manager<hardware::memory_transfer_manager>()
     );
 }
 
