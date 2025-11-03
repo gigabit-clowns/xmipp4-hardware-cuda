@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #pragma once
+
 #include <xmipp4/core/hardware/device_event.hpp>
 #include <xmipp4/core/hardware/device_to_host_event.hpp>
 

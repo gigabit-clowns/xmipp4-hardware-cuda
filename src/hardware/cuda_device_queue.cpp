@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "cuda_device_queue.hpp"
+#include <xmipp4/cuda/hardware/cuda_device_queue.hpp>
 
-#include "cuda_error.hpp"
-#include "cuda_device.hpp"
+#include <xmipp4/cuda/hardware/cuda_error.hpp>
+#include <xmipp4/cuda/hardware/cuda_device.hpp>
 
 #include <utility>
 
@@ -11,11 +11,6 @@ namespace xmipp4
 {
 namespace hardware
 {
-
-cuda_device_queue::cuda_device_queue()
-{
-    XMIPP4_CUDA_CHECK( cudaStreamCreate(&m_stream) );
-}
 
 cuda_device_queue::cuda_device_queue(cuda_device &device)
 {

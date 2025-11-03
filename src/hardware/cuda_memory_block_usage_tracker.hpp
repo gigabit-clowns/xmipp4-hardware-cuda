@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #pragma once
+
 #include "cuda_memory_block.hpp"
 
 #include <xmipp4/core/span.hpp>
@@ -56,5 +57,3 @@ private:
 
 } // namespace hardware
 } // namespace xmipp4
-
-#include "cuda_memory_block_usage_tracker.inl"

@@ -2,7 +2,11 @@
 
 #include "cuda_pinned_memory_resource.hpp"
 
+#include <xmipp4/cuda/hardware/cuda_error.hpp>
+
 #include <utility>
+
+#include <cuda_runtime.h>
 
 namespace xmipp4
 {
@@ -18,13 +22,19 @@ device* cuda_pinned_memory_resource::get_target_device() const noexcept
 
 memory_resource_kind cuda_pinned_memory_resource::get_kind() const noexcept
 {
-    return memory_resource_kind::device_mapped;
+    return memory_resource_kind::host_staging;
 }
 
-std::shared_ptr<memory_allocator> 
-cuda_pinned_memory_resource::create_allocator()
+void* cuda_pinned_memory_resource::malloc(std::size_t size) noexcept
 {
-    return nullptr; // TODO
+    void* result;
+    XMIPP4_CUDA_CHECK( cudaMallocHost(&result, size) );
+    return result;
+}
+
+void cuda_pinned_memory_resource::free(void* ptr) noexcept
+{
+    XMIPP4_CUDA_CHECK( cudaFreeHost(ptr) );
 }
 
 cuda_pinned_memory_resource& cuda_pinned_memory_resource::get() noexcept

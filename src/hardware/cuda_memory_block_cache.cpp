@@ -9,7 +9,6 @@ namespace xmipp4
 namespace hardware
 {
 
-inline
 cuda_memory_block_cache::cuda_memory_block_cache(std::size_t minimum_size, 
                                                  std::size_t request_size_step )
     : m_minimum_size(minimum_size)
@@ -17,31 +16,27 @@ cuda_memory_block_cache::cuda_memory_block_cache(std::size_t minimum_size,
 {
 }
 
-template <typename Allocator>
-inline
-void cuda_memory_block_cache::release(Allocator &allocator)
+void cuda_memory_block_cache::release(cuda_memory_resource &resource)
 {
     m_deferred_blocks.process_pending_free(m_block_pool);
-    release_blocks(m_block_pool, allocator);
+    release_blocks(m_block_pool, resource);
 }
 
-template <typename Allocator>
-inline
 const cuda_memory_block* 
-cuda_memory_block_cache::allocate(Allocator &allocator, 
-                                  std::size_t size, 
-                                  std::size_t alignment,
-                                  const cuda_device_queue *queue,
-                                  cuda_memory_block_usage_tracker **usage_tracker ) 
+cuda_memory_block_cache::allocate(
+    cuda_memory_resource &resource,
+    std::size_t size, 
+    const cuda_device_queue *queue,
+    cuda_memory_block_usage_tracker **usage_tracker
+) 
 {
     const cuda_memory_block *result;
 
     m_deferred_blocks.process_pending_free(m_block_pool);
     const auto ite = allocate_block(
         m_block_pool,
-        allocator, 
+        resource, 
         size,
-        alignment,
         queue,
         m_minimum_size,
         m_request_size_step

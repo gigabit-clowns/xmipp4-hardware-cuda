@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #pragma once
+
 #include <xmipp4/core/span.hpp>
 
 #include <cstddef>
@@ -26,25 +27,18 @@ public:
     /**
      * @brief Construct a new cuda memory block from its components.
      * 
-     * @param data Referenced data.
+     * @param base_ptr Pointer to the super-block allocated by CUDA.
+     * @param offset Offset into the super-block.
      * @param size Number of bytes referenced.
      * @param queue Queue where this belongs.
      */
-    cuda_memory_block(void *data, 
-                      std::size_t size, 
-                      const cuda_device_queue *queue ) noexcept;
-    /**
-     * @brief Construct a new cuda memory block from its components.
-     * 
-     * @param data Referenced data.
-     * @param alignment The alignment of the data pointer.
-     * @param size Number of bytes referenced.
-     * @param queue Queue where this belongs.
-     */
-    cuda_memory_block(void *data, 
-                      std::size_t alignment,  
-                      std::size_t size, 
-                      const cuda_device_queue *queue ) noexcept;
+    cuda_memory_block(
+        void *base_ptr,
+        std::ptrdiff_t offset, 
+        std::size_t size, 
+        const cuda_device_queue *queue 
+    ) noexcept;
+
     cuda_memory_block(const cuda_memory_block &other) = default;
     cuda_memory_block(cuda_memory_block &&other) = default;
     ~cuda_memory_block() = default;
@@ -53,19 +47,27 @@ public:
     cuda_memory_block& operator=(cuda_memory_block &&other) = default;
 
     /**
-     * @brief Obtain the pointer to the data.
+     * @brief Obtain the base pointer to the allocation.
      * 
-     * @return void* The data.
+     * @return void*
      * 
      */
-    void* get_data() const noexcept;
+    void* get_base_ptr() const noexcept;
 
     /**
-     * @brief Get the alignment of the data pointer.
+     * @brief Get the offset from the base pointer where this block takes
+     * place.
      * 
-     * @return std::size_t The alignment in bytes.
+     * @return std::ptrdiff_t 
      */
-    std::size_t get_alignment() const noexcept;
+    std::ptrdiff_t get_offset() const noexcept;
+
+    /**
+     * @brief Get the pointer to the data.
+     * 
+     * @return void* 
+     */
+    void* get_data_ptr() const noexcept;
 
     /**
      * @brief Get the number of bytes referenced by this object.
@@ -82,10 +84,10 @@ public:
     const cuda_device_queue* get_queue() const noexcept;
 
 private:
-    void *m_data;
-    std::size_t m_alignment;
-    std::size_t m_size;
     const cuda_device_queue *m_queue;
+    std::size_t m_size;
+    void *m_base_ptr;
+    std::ptrdiff_t m_offset;
 
 }; 
 
@@ -100,10 +102,24 @@ private:
  * If equal, data pointers are compared.
  * 
  */
-struct cuda_memory_block_less
+class cuda_memory_block_less
 {
-    bool operator()(const cuda_memory_block &lhs, 
-                    const cuda_memory_block &rhs ) const noexcept;
+public:
+    bool operator()(
+        const cuda_memory_block &lhs, 
+        const cuda_memory_block &rhs
+    ) const noexcept;
+
+private:
+    using tuple_type = std::tuple<
+        const cuda_device_queue*,
+        std::size_t,
+        void*
+    >;
+
+    static
+    tuple_type as_tuple(const cuda_memory_block &block) noexcept;
+
 };
 
 } // namespace hardware

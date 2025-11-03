@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #pragma once
+
 #include "cuda_memory_block.hpp"
 #include "cuda_memory_block_usage_tracker.hpp"
 
@@ -13,6 +14,7 @@ namespace hardware
 
 class cuda_memory_block_context;
 class cuda_device_queue;
+class cuda_memory_resource;
 
 /**
  * @brief Collection of ordered cuda_memory_block-s with a context.
@@ -233,17 +235,17 @@ bool check_links(cuda_memory_block_pool::iterator ite) noexcept;
  * 
  * @param blocks Collection of blocks.
  * @param size Minimum size of the block.
- * @param alignment Minumum alignment of the data pointer of the block.
  * @param queue_id Queue id of the block.
  * @return cuda_memory_block_pool::iterator Iterator the candidate block.
  * blocks.end() if none was found.
  * 
  */
 cuda_memory_block_pool::iterator 
-find_suitable_block(cuda_memory_block_pool &blocks, 
-                    std::size_t size,
-                    std::size_t alignment,
-                    const cuda_device_queue *queue );
+find_suitable_block(
+    cuda_memory_block_pool &blocks, 
+    std::size_t size,
+    const cuda_device_queue *queue 
+);
 
 /**
  * @brief Partition the requested block if necessary.
@@ -261,10 +263,12 @@ find_suitable_block(cuda_memory_block_pool &blocks,
  * 
  */
 cuda_memory_block_pool::iterator 
-consider_partitioning_block(cuda_memory_block_pool &blocks,
-                            cuda_memory_block_pool::iterator ite,
-                            std::size_t size,
-                            std::size_t threshold );
+consider_partitioning_block(
+    cuda_memory_block_pool &blocks,
+    cuda_memory_block_pool::iterator ite,
+    std::size_t size,
+    std::size_t threshold 
+);
 
 /**
  * @brief Partition a block in two blocks.
@@ -278,10 +282,12 @@ consider_partitioning_block(cuda_memory_block_pool &blocks,
  * 
  */
 cuda_memory_block_pool::iterator 
-partition_block(cuda_memory_block_pool &blocks,
-                cuda_memory_block_pool::iterator ite,
-                std::size_t size,
-                std::size_t remaining );
+partition_block(
+    cuda_memory_block_pool &blocks,
+    cuda_memory_block_pool::iterator ite,
+    std::size_t size,
+    std::size_t remaining
+);
 
 /**
  * @brief Merge adjacent blocks if necessary.
@@ -295,8 +301,10 @@ partition_block(cuda_memory_block_pool &blocks,
  * 
  */
 cuda_memory_block_pool::iterator 
-consider_merging_block(cuda_memory_block_pool &blocks,
-                       cuda_memory_block_pool::iterator ite );
+consider_merging_block(
+    cuda_memory_block_pool &blocks,
+    cuda_memory_block_pool::iterator ite
+);
 
 /**
  * @brief Merge two blocks.
@@ -310,10 +318,11 @@ consider_merging_block(cuda_memory_block_pool &blocks,
  * 
  */
 cuda_memory_block_pool::iterator 
-merge_blocks(cuda_memory_block_pool &blocks,
-             cuda_memory_block_pool::iterator first,
-             cuda_memory_block_pool::iterator second );
-
+merge_blocks(
+    cuda_memory_block_pool &blocks,
+    cuda_memory_block_pool::iterator first,
+    cuda_memory_block_pool::iterator second
+);
 
 /**
  * @brief Merge three blocks.
@@ -329,10 +338,12 @@ merge_blocks(cuda_memory_block_pool &blocks,
  * 
  */
 cuda_memory_block_pool::iterator 
-merge_blocks(cuda_memory_block_pool &blocks,
-             cuda_memory_block_pool::iterator first,
-             cuda_memory_block_pool::iterator second,
-             cuda_memory_block_pool::iterator third );
+merge_blocks(
+    cuda_memory_block_pool &blocks,
+    cuda_memory_block_pool::iterator first,
+    cuda_memory_block_pool::iterator second,
+    cuda_memory_block_pool::iterator third
+);
 
 /**
  * @brief Allocate a new block.
@@ -346,11 +357,12 @@ merge_blocks(cuda_memory_block_pool &blocks,
  * block. blocks.end() if the allocation fails.
  * 
  */
-template <typename Allocator>
-cuda_memory_block_pool::iterator create_block(cuda_memory_block_pool &blocks,
-                                              Allocator& allocator,
-                                              std::size_t size,
-                                              const cuda_device_queue *queue );
+cuda_memory_block_pool::iterator create_block(
+    cuda_memory_block_pool &blocks,
+    cuda_memory_resource &resource,
+    std::size_t size,
+    const cuda_device_queue *queue 
+);
 
 /**
  * @brief Request a suitable block.
@@ -362,7 +374,6 @@ cuda_memory_block_pool::iterator create_block(cuda_memory_block_pool &blocks,
  * @param blocks Collection of blocks.
  * @param allocator The allocator used for creating a new block.
  * @param size Requested block size.
- * @param alignment Minumum alignment of the data pointer of the block.
  * @param queue_id Queue where the block belongs to.
  * @param partition_min_size Minimum remaining size on a block to consider
  * partitioning it.
@@ -371,15 +382,15 @@ cuda_memory_block_pool::iterator create_block(cuda_memory_block_pool &blocks,
  * blocks.end() when failure.
  * 
  */
-template <typename Allocator>
 cuda_memory_block_pool::iterator 
-allocate_block(cuda_memory_block_pool &blocks, 
-               const Allocator &allocator, 
-               std::size_t size,
-               std::size_t alignment,
-               const cuda_device_queue *queue,
-               std::size_t partition_min_size,
-               std::size_t create_size_step );
+allocate_block(
+    cuda_memory_block_pool &blocks, 
+    cuda_memory_resource &resource,
+    std::size_t size,
+    const cuda_device_queue *queue,
+    std::size_t partition_min_size,
+    std::size_t create_size_step 
+);
 
 /**
  * @brief Return a block to the pool.
@@ -392,8 +403,10 @@ allocate_block(cuda_memory_block_pool &blocks,
  * It must belong to the provided pool.
  * 
  */
-void deallocate_block(cuda_memory_block_pool &blocks, 
-                      cuda_memory_block_pool::iterator ite );
+void deallocate_block(
+    cuda_memory_block_pool &blocks, 
+    cuda_memory_block_pool::iterator ite
+);
 
 /**
  * @brief Release free blocks when possible.
@@ -405,10 +418,10 @@ void deallocate_block(cuda_memory_block_pool &blocks,
  * @param allocator The allocator used for creating a new block.
  * 
  */
-template <typename Allocator>
-void release_blocks(cuda_memory_block_pool &blocks, Allocator &allocator);
+void release_blocks(
+    cuda_memory_block_pool &blocks, 
+    cuda_memory_resource &resource
+);
 
 } // namespace hardware
 } // namespace xmipp4
-
-#include "cuda_memory_block_pool.inl"

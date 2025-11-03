@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #pragma once
+
 #include <xmipp4/core/hardware/device_queue.hpp>
 
 #include <cuda_runtime.h>
@@ -18,7 +19,6 @@ class cuda_device_queue final
 public:
     using handle = cudaStream_t;
 
-    cuda_device_queue();
     explicit cuda_device_queue(cuda_device &device);
     cuda_device_queue(const cuda_device_queue &other) = delete;
     cuda_device_queue(cuda_device_queue &&other) noexcept;

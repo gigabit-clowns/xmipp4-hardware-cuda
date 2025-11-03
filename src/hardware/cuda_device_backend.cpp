@@ -2,8 +2,8 @@
 
 #include "cuda_device_backend.hpp"
 
-#include "cuda_error.hpp"
-#include "cuda_device.hpp"
+#include <xmipp4/cuda/hardware/cuda_error.hpp>
+#include <xmipp4/cuda/hardware/cuda_device.hpp>
 
 #include <xmipp4/core/hardware/device_manager.hpp>
 

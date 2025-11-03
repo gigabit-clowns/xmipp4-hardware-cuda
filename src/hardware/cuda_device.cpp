@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "cuda_device.hpp"
+#include <xmipp4/cuda/hardware/cuda_device.hpp>
 
-#include "cuda_device_queue.hpp"
-#include "cuda_event.hpp"
+#include <xmipp4/cuda/hardware/cuda_device_queue.hpp>
+#include <xmipp4/cuda/hardware/cuda_event.hpp>
 #include "cuda_pinned_memory_resource.hpp"
 
 #include <memory>

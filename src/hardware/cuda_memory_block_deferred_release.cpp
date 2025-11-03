@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include "cuda_deferred_memory_block_release.hpp"
+#include "cuda_memory_block_deferred_release.hpp"
 
 #include <algorithm>
 
@@ -9,8 +9,7 @@ namespace xmipp4
 namespace hardware
 {
 
-inline
-void cuda_deferred_memory_block_release::process_pending_free(cuda_memory_block_pool &cache)
+void cuda_memory_block_deferred_release::process_pending_free(cuda_memory_block_pool &cache)
 {
     const auto last = std::remove_if(
         m_pending_free.begin(), m_pending_free.end(),
@@ -34,8 +33,7 @@ void cuda_deferred_memory_block_release::process_pending_free(cuda_memory_block_
     m_pending_free.erase(last, m_pending_free.end());
 }
 
-inline
-void cuda_deferred_memory_block_release::signal_events(cuda_memory_block_pool::iterator ite,
+void cuda_memory_block_deferred_release::signal_events(cuda_memory_block_pool::iterator ite,
                                                        span<cuda_device_queue *const> queues )
 {
     m_pending_free.emplace_back(
@@ -65,8 +63,7 @@ void cuda_deferred_memory_block_release::signal_events(cuda_memory_block_pool::i
     }
 }
 
-inline
-void cuda_deferred_memory_block_release::pop_completed_events(event_list &events)
+void cuda_memory_block_deferred_release::pop_completed_events(event_list &events)
 {
     auto prev_ite = events.cbefore_begin();
     event_list::const_iterator ite;

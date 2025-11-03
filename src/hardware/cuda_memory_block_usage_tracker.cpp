@@ -9,13 +9,11 @@ namespace xmipp4
 namespace hardware
 {
 
-inline
 void cuda_memory_block_usage_tracker::reset() noexcept
 {
     m_queues.clear();
 }
 
-inline
 void cuda_memory_block_usage_tracker::add_queue(const cuda_memory_block &block,
                                                 cuda_device_queue &queue )
 {
@@ -36,7 +34,6 @@ void cuda_memory_block_usage_tracker::add_queue(const cuda_memory_block &block,
     }
 }
 
-inline
 span<cuda_device_queue *const> 
 cuda_memory_block_usage_tracker::get_queues() const noexcept
 {

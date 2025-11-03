@@ -4,8 +4,6 @@
 
 #include <xmipp4/core/hardware/device.hpp>
 
-#include "cuda_device_memory_resource.hpp"
-
 namespace xmipp4 
 {
 namespace hardware
@@ -43,7 +41,7 @@ public:
 
 private:
     int m_device;
-    cuda_device_memory_resource m_memory_resource;
+    //cuda_device_memory_resource m_memory_resource; // TODO
 
 }; 
 

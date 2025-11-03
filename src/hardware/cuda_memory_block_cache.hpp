@@ -3,12 +3,14 @@
 #pragma once
 #include "cuda_memory_block.hpp"
 #include "cuda_memory_block_pool.hpp"
-#include "cuda_deferred_memory_block_release.hpp"
+#include "cuda_memory_block_deferred_release.hpp"
 
 namespace xmipp4 
 {
 namespace hardware
 {
+
+class cuda_memory_resource;
 
 /**
  * @brief Manages a set of cuda_memory_block-s to efficiently
@@ -33,19 +35,18 @@ public:
      * @brief Return free blocks to the allocator when possible.
      * 
      * @tparam Allocator Class that implements allocate() and deallocate()
-     * @param allocator Allocator used for deallocating free blocks.
+     * @param resource Memory resource used for deallocating free blocks.
      * Must be compatible with the allocator used in allocate()
      * 
      */
-    template <typename Allocator>
-    void release(Allocator &allocator);
+    void release(cuda_memory_resource &resource);
 
     /**
      * @brief Allocate a new block.
      * 
      * @tparam Allocator Class that implements allocate() and deallocate()
-     * @param allocator Allocator object. Used when there are no suitable blocks
-     * in cache.
+     * @param resource Memory resource used for allocating blocks when
+     * no suitable block exists in cache.
      * @param size Size of the requested block.
      * @param alignment Alignment requirement for the requested block.
      * @param queue Queue of the requested block.
@@ -56,13 +57,13 @@ public:
      * fails.
      * 
      */
-    template <typename Allocator>
     const cuda_memory_block* 
-    allocate(Allocator &allocator, 
-             std::size_t size, 
-             std::size_t alignment,
-             const cuda_device_queue *queue,
-             cuda_memory_block_usage_tracker **usage_tracker );
+    allocate(
+        cuda_memory_resource &resource,
+        std::size_t size, 
+        const cuda_device_queue *queue,
+        cuda_memory_block_usage_tracker **usage_tracker 
+    );
 
     /**
      * @brief Deallocate a block.
@@ -77,7 +78,7 @@ public:
 
 private:
     cuda_memory_block_pool m_block_pool;
-    cuda_deferred_memory_block_release m_deferred_blocks;
+    cuda_memory_block_deferred_release m_deferred_blocks;
     std::size_t m_minimum_size;
     std::size_t m_request_size_step;
 
@@ -85,5 +86,3 @@ private:
 
 } // namespace hardware
 } // namespace xmipp4
-
-#include "cuda_memory_block_cache.inl"

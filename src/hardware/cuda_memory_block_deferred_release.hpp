@@ -3,10 +3,11 @@
 #pragma once
 #include "cuda_memory_block.hpp"
 #include "cuda_memory_block_pool.hpp"
-#include "../cuda_event.hpp"
-#include "../cuda_device_queue.hpp"
 
 #include <xmipp4/core/span.hpp>
+
+#include <xmipp4/cuda/hardware/cuda_event.hpp>
+#include <xmipp4/cuda/hardware/cuda_device_queue.hpp>
 
 #include <forward_list>
 #include <utility>
@@ -22,18 +23,18 @@ namespace hardware
  * CUDA queues (streams).
  * 
  */
-class cuda_deferred_memory_block_release
+class cuda_memory_block_deferred_release
 {
 public:
-    cuda_deferred_memory_block_release() = default;
-    cuda_deferred_memory_block_release(const cuda_deferred_memory_block_release &other) = delete;
-    cuda_deferred_memory_block_release(cuda_deferred_memory_block_release &&other) = default;
-    ~cuda_deferred_memory_block_release() = default;
+    cuda_memory_block_deferred_release() = default;
+    cuda_memory_block_deferred_release(const cuda_memory_block_deferred_release &other) = delete;
+    cuda_memory_block_deferred_release(cuda_memory_block_deferred_release &&other) = default;
+    ~cuda_memory_block_deferred_release() = default;
 
-    cuda_deferred_memory_block_release&
-    operator=(const cuda_deferred_memory_block_release &other) = delete;
-    cuda_deferred_memory_block_release&
-    operator=(cuda_deferred_memory_block_release &&other) = default;
+    cuda_memory_block_deferred_release&
+    operator=(const cuda_memory_block_deferred_release &other) = delete;
+    cuda_memory_block_deferred_release&
+    operator=(cuda_memory_block_deferred_release &&other) = default;
 
     /**
      * @brief Iterate through release events and return back all blocks
@@ -57,8 +58,10 @@ public:
      * been returned to the pool leads to undefined behavior.
      * 
      */
-    void signal_events(cuda_memory_block_pool::iterator ite,
-                       span<cuda_device_queue *const> other_queues );
+    void signal_events(
+        cuda_memory_block_pool::iterator ite,
+        span<cuda_device_queue *const> other_queues 
+    );
 
 private:
     using event_list = std::forward_list<cuda_event>;
@@ -77,5 +80,3 @@ private:
 
 } // namespace hardware
 } // namespace xmipp4
-
-#include "cuda_deferred_memory_block_release.inl"

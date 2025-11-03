@@ -2,9 +2,12 @@
 
 #include "cuda_device_memory_resource.hpp"
 
-#include "cuda_device.hpp"
+#include <xmipp4/cuda/hardware/cuda_device.hpp>
+#include <xmipp4/cuda/hardware/cuda_error.hpp>
 
 #include <utility>
+
+#include <cuda_runtime.h>
 
 namespace xmipp4
 {
@@ -33,6 +36,20 @@ std::shared_ptr<memory_allocator>
 cuda_device_memory_resource::create_allocator()
 {
     return nullptr; // TODO
+}
+
+void* cuda_device_memory_resource::malloc(std::size_t size) noexcept
+{
+    void* result;
+    const auto device_id = m_device.get().get_index();
+    XMIPP4_CUDA_CHECK( cudaSetDevice(device_id) );
+    XMIPP4_CUDA_CHECK( cudaMalloc(&result, size) );
+    return result;
+}
+
+void cuda_device_memory_resource::free(void* ptr) noexcept
+{
+    XMIPP4_CUDA_CHECK( cudaFree(ptr) );
 }
 
 } // namespace hardware
