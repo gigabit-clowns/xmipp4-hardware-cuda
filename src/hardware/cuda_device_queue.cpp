@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-#include <xmipp4/cuda/hardware/cuda_device_queue.hpp>
+#include "cuda_device_queue.hpp"
 
-#include <xmipp4/cuda/hardware/cuda_error.hpp>
-#include <xmipp4/cuda/hardware/cuda_device.hpp>
+#include "cuda_error.hpp"
+#include "cuda_device.hpp"
 
 #include <utility>
 
@@ -83,7 +83,7 @@ bool cuda_device_queue::is_idle() const noexcept
     
     default:
         XMIPP4_CUDA_CHECK(code);
-        result = false; // To avoid warnings. The above line should throw.
+        result = false; // To avoid warnings. The line above should throw.
         break;
     }
     return result;
