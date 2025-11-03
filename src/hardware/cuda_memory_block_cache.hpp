@@ -20,8 +20,10 @@ class cuda_memory_resource;
 class cuda_memory_block_cache
 {
 public:
-    cuda_memory_block_cache(std::size_t minimum_size, 
-                            std::size_t request_size_step );
+    cuda_memory_block_cache(
+        std::size_t minimum_size, 
+        std::size_t request_size_step
+    );
     cuda_memory_block_cache(const cuda_memory_block_cache &other) = delete;
     cuda_memory_block_cache(cuda_memory_block_cache &&other) = default;
     ~cuda_memory_block_cache() = default;
@@ -61,6 +63,7 @@ public:
     allocate(
         cuda_memory_resource &resource,
         std::size_t size, 
+        std::size_t alignment, 
         const cuda_device_queue *queue,
         cuda_memory_block_usage_tracker **usage_tracker 
     );
@@ -81,6 +84,7 @@ private:
     cuda_memory_block_deferred_release m_deferred_blocks;
     std::size_t m_minimum_size;
     std::size_t m_request_size_step;
+    std::size_t m_maximum_alignment;
 
 }; 
 

@@ -154,10 +154,25 @@ bool check_links(cuda_memory_block_pool::iterator ite) noexcept
     return check_backward_link(ite) && check_forward_link(ite);
 }
 
+bool is_suitable(
+    const cuda_memory_block &block, 
+    std::size_t size, 
+    std::size_t alignment
+) noexcept
+{
+    const auto block_size = block.get_size();
+    const auto block_data = reinterpret_cast<std::uintptr_t>(
+        block.get_data_ptr()
+    );
+    const auto aligned = memory::align_ceil(block_data, alignment);
+    return (aligned + size) <= (block_data + block_size); 
+}
+
 cuda_memory_block_pool::iterator 
 find_suitable_block(
     cuda_memory_block_pool &blocks, 
     std::size_t size,
+    std::size_t alignment, 
     const cuda_device_queue *queue 
 )
 {
@@ -173,9 +188,10 @@ find_suitable_block(
         {
             // Reached the end of the allowed range.
             ite = blocks.end();
-            break;
         }
-        else if (ite->second.is_free())
+        else if (
+            ite->second.is_free() && is_suitable(ite->first, size, alignment)
+        )
         {
             // Found a suitable block
             break;
@@ -202,13 +218,18 @@ consider_partitioning_block(
     const auto remaining = ite->first.get_size() - size;
     if (remaining >= threshold)
     {
-        ite = partition_block(blocks, ite, size, remaining);
+        std::tie(ite, std::ignore) = partition_block(
+            blocks, 
+            ite, 
+            size, 
+            remaining
+        ); 
     }
 
     return ite;
 }
 
-cuda_memory_block_pool::iterator 
+std::pair<cuda_memory_block_pool::iterator, cuda_memory_block_pool::iterator>
 partition_block(
     cuda_memory_block_pool &blocks,
     cuda_memory_block_pool::iterator ite,
@@ -264,7 +285,7 @@ partition_block(
     XMIPP4_ASSERT( check_links(first) );
     XMIPP4_ASSERT( check_links(second) );
 
-    return first;
+    return std::make_pair(first, second);
 }
 
 cuda_memory_block_pool::iterator
@@ -400,12 +421,13 @@ allocate_block(
     cuda_memory_block_pool &blocks, 
     cuda_memory_resource &resource,
     std::size_t size,
+    std::size_t alignment, 
     const cuda_device_queue *queue,
     std::size_t partition_min_size,
     std::size_t create_size_step 
 )
 {
-    auto ite = find_suitable_block(blocks, size, queue);
+    auto ite = find_suitable_block(blocks, size, alignment, queue);
     if (ite == blocks.end())
     {
         const auto create_size = memory::align_ceil(size, create_size_step);
@@ -414,7 +436,33 @@ allocate_block(
 
     if (ite != blocks.end())
     {
-        ite = consider_partitioning_block(blocks, ite, size, partition_min_size);
+        const auto data_address = 
+            reinterpret_cast<std::uintptr_t>(ite->first.get_data_ptr());
+        const auto aligned_data_address = 
+            memory::align_ceil(data_address, alignment);
+
+        if (data_address != aligned_data_address)
+        {
+            // Partition to add padding to meet alignment requirements.
+            XMIPP4_ASSERT( data_address < aligned_data_address );
+            const auto padding = aligned_data_address - data_address;
+            XMIPP4_ASSERT( padding + size <= ite->first.get_size() );
+            const auto remaining = ite->first.get_size() - padding;
+
+            std::tie(std::ignore, ite) = partition_block(
+                blocks, 
+                ite, 
+                padding, 
+                remaining
+            );
+        }
+
+        ite = consider_partitioning_block(
+            blocks, 
+            ite, 
+            size, 
+            partition_min_size
+        );
         ite->second.set_free(false);
     }
 

@@ -9,8 +9,10 @@ namespace xmipp4
 namespace hardware
 {
 
-cuda_memory_block_cache::cuda_memory_block_cache(std::size_t minimum_size, 
-                                                 std::size_t request_size_step )
+cuda_memory_block_cache::cuda_memory_block_cache(
+    std::size_t minimum_size, 
+    std::size_t request_size_step 
+)
     : m_minimum_size(minimum_size)
     , m_request_size_step(request_size_step)
 {
@@ -26,6 +28,7 @@ const cuda_memory_block*
 cuda_memory_block_cache::allocate(
     cuda_memory_resource &resource,
     std::size_t size, 
+    std::size_t alignment, 
     const cuda_device_queue *queue,
     cuda_memory_block_usage_tracker **usage_tracker
 ) 
@@ -37,6 +40,7 @@ cuda_memory_block_cache::allocate(
         m_block_pool,
         resource, 
         size,
+        alignment,
         queue,
         m_minimum_size,
         m_request_size_step

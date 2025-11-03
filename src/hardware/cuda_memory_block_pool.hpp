@@ -228,6 +228,21 @@ bool check_backward_link(cuda_memory_block_pool::iterator ite) noexcept;
 bool check_links(cuda_memory_block_pool::iterator ite) noexcept;
 
 /**
+ * @brief Check if a block is suitable for the requested alignment.
+ * 
+ * @param block The block to be checked.
+ * @param size Size requirement of the allocation.
+ * @param alignment Alignment requirement of the allocation.
+ * @return true If the block is suitable.
+ * @return false If the block is not suitable.
+ */
+bool is_suitable(
+    const cuda_memory_block &block, 
+    std::size_t size, 
+    std::size_t alignment
+) noexcept;
+
+/**
  * @brief Find a candidate block.
  * 
  * If found, the returned block will be at least of the requested size
@@ -235,6 +250,7 @@ bool check_links(cuda_memory_block_pool::iterator ite) noexcept;
  * 
  * @param blocks Collection of blocks.
  * @param size Minimum size of the block.
+ * @param alignment Minimum alignment of the block.
  * @param queue_id Queue id of the block.
  * @return cuda_memory_block_pool::iterator Iterator the candidate block.
  * blocks.end() if none was found.
@@ -244,6 +260,7 @@ cuda_memory_block_pool::iterator
 find_suitable_block(
     cuda_memory_block_pool &blocks, 
     std::size_t size,
+    std::size_t alignment, 
     const cuda_device_queue *queue 
 );
 
@@ -277,11 +294,11 @@ consider_partitioning_block(
  * @param ite Iterator to the block to be partitioned. Must be dereferenceable.
  * @param size Size of the first partition.
  * @param remaining Size of the second partition.
- * @return cuda_memory_block_pool::iterator Iterator to the first partition
- * of the input block.
+ * @return std::pair<cuda_memory_block_pool::iterator, 
+ * cuda_memory_block_pool::iterator> Iterators to the resulting two partitions.
  * 
  */
-cuda_memory_block_pool::iterator 
+std::pair<cuda_memory_block_pool::iterator, cuda_memory_block_pool::iterator>
 partition_block(
     cuda_memory_block_pool &blocks,
     cuda_memory_block_pool::iterator ite,
@@ -348,9 +365,8 @@ merge_blocks(
 /**
  * @brief Allocate a new block.
  * 
- * @tparam Allocator class with allocate() and deallocate() methods.
  * @param blocks Collection of blocks.
- * @param allocator The allocator used for creating a new block.
+ * @param resource The memory resource used for creating a new block.
  * @param size Requested block size.
  * @param queue_id Queue where the block belongs to.
  * @return cuda_memory_block_pool::iterator Iterator to the newly allocated
@@ -368,12 +384,12 @@ cuda_memory_block_pool::iterator create_block(
  * @brief Request a suitable block.
  *
  * A suitable and free block is searched in the pool if none is found,
- * it is requested from the allocator. 
+ * it is requested from the memory resource
  *  
- * @tparam Allocator class with allocate() and deallocate() methods.
  * @param blocks Collection of blocks.
- * @param allocator The allocator used for creating a new block.
+ * @param resource The resource used for creating a new block.
  * @param size Requested block size.
+ * @param alignment Minimum alignment of the block.
  * @param queue_id Queue where the block belongs to.
  * @param partition_min_size Minimum remaining size on a block to consider
  * partitioning it.
@@ -387,6 +403,7 @@ allocate_block(
     cuda_memory_block_pool &blocks, 
     cuda_memory_resource &resource,
     std::size_t size,
+    std::size_t alignment, 
     const cuda_device_queue *queue,
     std::size_t partition_min_size,
     std::size_t create_size_step 
@@ -413,9 +430,8 @@ void deallocate_block(
  * 
  * All free blocks that are not partitioned are returned to the allocator.
  * 
- * @tparam Allocator class with allocate() and deallocate() methods.
  * @param blocks Collection of blocks.
- * @param allocator The allocator used for creating a new block.
+ * @param resource The memory resource where the blocks are released.
  * 
  */
 void release_blocks(
