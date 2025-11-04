@@ -29,10 +29,12 @@ class cuda_error
  * @param line Line where the error occurred.
  * 
  */
-void cuda_check(cudaError_t code, 
-                const char* call, 
-                const char* file,
-                int line );
+void cuda_check(
+    cudaError_t code, 
+    const char* call, 
+    const char* file,
+    int line
+);
 
 /**
  * @brief Calls cuda_check filling the call name, filename and line number.
