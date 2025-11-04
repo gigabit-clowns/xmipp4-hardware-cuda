@@ -20,9 +20,6 @@ public:
     virtual void* malloc(std::size_t size, std::size_t alignment) = 0;
     virtual void free(void* ptr) = 0;
 
-    std::shared_ptr<cuda_memory_allocator> create_cuda_allocator();
-    std::shared_ptr<memory_allocator> create_allocator() override;
-
 }; 
 
 } // namespace hardware

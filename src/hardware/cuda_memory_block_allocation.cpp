@@ -65,18 +65,6 @@ void cuda_memory_block_allocation::swap(cuda_memory_block_allocation &other) noe
     std::swap(m_tracker, other.m_tracker);
 }
 
-std::size_t cuda_memory_block_allocation::get_size() const noexcept
-{
-    if (m_block)
-    {
-        return m_block->get_size();
-    }
-    else
-    {
-        return 0UL;
-    }
-}
-
 cuda_memory_block_allocator& 
 cuda_memory_block_allocation::get_allocator() const noexcept
 {
