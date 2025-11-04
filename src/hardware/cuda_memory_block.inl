@@ -11,34 +11,20 @@ namespace hardware
 
 inline
 cuda_memory_block::cuda_memory_block(
-    void *base_ptr, 
-    std::ptrdiff_t offset,
+    void *data_ptr, 
     std::size_t size, 
     const cuda_device_queue *queue
 ) noexcept
     : m_queue(queue)
     , m_size(size)
-    , m_base_ptr(base_ptr)
-    , m_offset(offset)
+    , m_data_ptr(data_ptr)
 {
-}
-
-inline
-void* cuda_memory_block::get_base_ptr() const noexcept
-{
-    return m_base_ptr;
-}
-
-inline
-std::ptrdiff_t cuda_memory_block::get_offset() const noexcept
-{
-    return m_offset;
 }
 
 inline
 void* cuda_memory_block::get_data_ptr() const noexcept
 {
-    return static_cast<memory::byte*>(m_base_ptr) + m_offset;
+    return m_data_ptr;
 }
 
 inline

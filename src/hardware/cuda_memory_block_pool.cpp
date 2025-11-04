@@ -179,7 +179,7 @@ find_suitable_block(
     // Assuming that the blocks are ordered according to their queue reference
     // first and then their sizes, the best fit is achieved iterating from
     // the first suitable block.
-    const cuda_memory_block key(nullptr, 0UL, size, queue);
+    const cuda_memory_block key(nullptr, size, queue);
     auto ite = blocks.lower_bound(key);
 
     while (ite != blocks.end())
@@ -247,8 +247,7 @@ partition_block(
     std::tie(first, inserted) = blocks.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(
-            ite->first.get_base_ptr(), 
-            ite->first.get_offset(), 
+            ite->first.get_data_ptr(), 
             size, 
             queue
         ),
@@ -262,8 +261,7 @@ partition_block(
     std::tie(second, inserted) = blocks.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(
-            ite->first.get_base_ptr(), 
-            ite->first.get_offset() + size, 
+            memory::offset_bytes(ite->first.get_data_ptr(), size),
             remaining, 
             queue
         ),
@@ -322,8 +320,7 @@ merge_blocks(
     cuda_memory_block_pool::iterator second
 )
 {
-    const auto base_ptr = first->first.get_base_ptr();
-    const auto offset = first->first.get_offset();
+    const auto data_ptr = first->first.get_data_ptr();
     const auto size = first->first.get_size() +
                       second->first.get_size() ;
     const auto queue = first->first.get_queue();
@@ -334,7 +331,7 @@ merge_blocks(
     bool inserted;
     std::tie(ite, inserted) = blocks.emplace(
         std::piecewise_construct,
-        std::forward_as_tuple(base_ptr, offset, size, queue),
+        std::forward_as_tuple(data_ptr, size, queue),
         std::forward_as_tuple(prev, next, true)
     );
     XMIPP4_ASSERT(inserted);
@@ -356,8 +353,7 @@ merge_blocks(
     cuda_memory_block_pool::iterator third
 )
 {
-    const auto base_ptr = first->first.get_base_ptr();
-    const auto offset = first->first.get_offset();
+    const auto data_ptr = first->first.get_data_ptr();
     const auto size = first->first.get_size() +
                       second->first.get_size() +
                       third->first.get_size() ;
@@ -369,7 +365,7 @@ merge_blocks(
     bool inserted;
     std::tie(ite, inserted) = blocks.emplace(
         std::piecewise_construct,
-        std::forward_as_tuple(base_ptr, offset, size, queue),
+        std::forward_as_tuple(data_ptr, size, queue),
         std::forward_as_tuple(prev, next, true)
     );
     XMIPP4_ASSERT(inserted);
@@ -404,7 +400,7 @@ cuda_memory_block_pool::iterator create_block(
         bool inserted;
         std::tie(result, inserted) = blocks.emplace(
             std::piecewise_construct,
-            std::forward_as_tuple(data, 0UL, size, queue),
+            std::forward_as_tuple(data, size, queue),
             std::forward_as_tuple(null, null, true)
         );
         XMIPP4_ASSERT(inserted);
@@ -488,7 +484,7 @@ void release_blocks(
     {
         if(ite->second.is_free() && !is_partition(ite->second))
         {
-            resource.free(ite->first.get_base_ptr());
+            resource.free(ite->first.get_data_ptr());
             ite = blocks.erase(ite);
         }
         else

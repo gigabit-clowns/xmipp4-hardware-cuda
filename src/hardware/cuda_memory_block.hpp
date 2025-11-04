@@ -33,8 +33,7 @@ public:
      * @param queue Queue where this belongs.
      */
     cuda_memory_block(
-        void *base_ptr,
-        std::ptrdiff_t offset, 
+        void *data_ptr,
         std::size_t size, 
         const cuda_device_queue *queue 
     ) noexcept;
@@ -45,22 +44,6 @@ public:
 
     cuda_memory_block& operator=(const cuda_memory_block &other) = default;
     cuda_memory_block& operator=(cuda_memory_block &&other) = default;
-
-    /**
-     * @brief Obtain the base pointer to the allocation.
-     * 
-     * @return void*
-     * 
-     */
-    void* get_base_ptr() const noexcept;
-
-    /**
-     * @brief Get the offset from the base pointer where this block takes
-     * place.
-     * 
-     * @return std::ptrdiff_t 
-     */
-    std::ptrdiff_t get_offset() const noexcept;
 
     /**
      * @brief Get the pointer to the data.
@@ -86,8 +69,7 @@ public:
 private:
     const cuda_device_queue *m_queue;
     std::size_t m_size;
-    void *m_base_ptr;
-    std::ptrdiff_t m_offset;
+    void *m_data_ptr;
 
 }; 
 
