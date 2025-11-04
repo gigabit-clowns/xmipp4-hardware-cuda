@@ -27,7 +27,7 @@ cuda_host_pinned_memory_allocator::cuda_host_pinned_memory_allocator()
 cuda_memory_resource& 
 cuda_host_pinned_memory_allocator::get_memory_resource() const noexcept
 {
-        cuda_host_pinned_memory_resource::get();
+    return cuda_host_pinned_memory_resource::get()
 }
 
 std::shared_ptr<cuda_buffer> cuda_host_pinned_memory_allocator::allocate(
