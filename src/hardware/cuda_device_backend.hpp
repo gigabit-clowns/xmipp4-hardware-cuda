@@ -11,8 +11,6 @@ namespace hardware
 
 class device_manager;
 
-
-
 class cuda_device_backend final
     : public device_backend
 {

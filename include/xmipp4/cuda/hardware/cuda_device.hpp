@@ -15,11 +15,11 @@ class cuda_device final
 public:
     explicit cuda_device(int device);
     cuda_device(const cuda_device &other) = delete;
-    cuda_device(cuda_device &&other) = default;
+    cuda_device(cuda_device &&other) = delete;
     ~cuda_device() override = default;
 
     cuda_device& operator=(const cuda_device &other) = delete;
-    cuda_device& operator=(cuda_device &&other) = default;
+    cuda_device& operator=(cuda_device &&other) = delete;
 
     int get_index() const noexcept;
 
