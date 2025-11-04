@@ -27,8 +27,7 @@ public:
     /**
      * @brief Construct a new cuda memory block from its components.
      * 
-     * @param base_ptr Pointer to the super-block allocated by CUDA.
-     * @param offset Offset into the super-block.
+     * @param data_ptr Pointer to the data.
      * @param size Number of bytes referenced.
      * @param queue Queue where this belongs.
      */
