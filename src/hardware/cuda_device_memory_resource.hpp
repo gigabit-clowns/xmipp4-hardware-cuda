@@ -4,6 +4,8 @@
 
 #include <xmipp4/core/hardware/memory_resource.hpp>
 
+#include <xmipp4/cuda/hardware/cuda_device.hpp>
+
 #include <utility>
 
 namespace xmipp4 
@@ -27,9 +29,11 @@ public:
     cuda_device_memory_resource&
     operator=(cuda_device_memory_resource &&other) = default;
 
-    device* get_target_device() const noexcept override;
+    cuda_device* get_target_device() const noexcept override;
 
     memory_resource_kind get_kind() const noexcept override;
+
+    std::size_t get_max_heap_alignment() const noexcept override;
 
     std::shared_ptr<memory_heap> 
     create_memory_heap(std::size_t size, std::size_t alignment) override;

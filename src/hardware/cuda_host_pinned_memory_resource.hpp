@@ -32,6 +32,8 @@ public:
 
     memory_resource_kind get_kind() const noexcept override;
 
+    std::size_t get_max_heap_alignment() const noexcept override;
+
     std::shared_ptr<memory_heap>
     create_memory_heap(std::size_t size, std::size_t alignment) override;
 
