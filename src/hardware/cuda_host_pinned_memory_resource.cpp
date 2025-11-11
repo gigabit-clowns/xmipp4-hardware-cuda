@@ -27,9 +27,18 @@ memory_resource_kind cuda_host_pinned_memory_resource::get_kind() const noexcept
 }
 
 std::shared_ptr<memory_heap> 
-cuda_host_pinned_memory_resource::create_memory_heap()
+cuda_host_pinned_memory_resource::create_memory_heap(
+    std::size_t size, 
+    std::size_t alignment
+)
 {
     return nullptr; // TODO
+}
+
+cuda_host_pinned_memory_resource& 
+cuda_host_pinned_memory_resource::get() noexcept
+{
+    return m_instance;
 }
 
 } // namespace hardware

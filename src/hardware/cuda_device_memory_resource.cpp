@@ -34,7 +34,10 @@ memory_resource_kind cuda_device_memory_resource::get_kind() const noexcept
     return memory_resource_kind::device_local;
 }
 
-std::shared_ptr<memory_heap> cuda_device_memory_resource::create_memory_heap()
+std::shared_ptr<memory_heap> cuda_device_memory_resource::create_memory_heap(
+    std::size_t size,
+    std::size_t alignment
+)
 {
     return nullptr; // TODO
 }

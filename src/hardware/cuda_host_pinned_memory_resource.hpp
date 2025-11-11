@@ -32,7 +32,10 @@ public:
 
     memory_resource_kind get_kind() const noexcept override;
 
-    std::shared_ptr<memory_heap> create_memory_heap() override;
+    std::shared_ptr<memory_heap>
+    create_memory_heap(std::size_t size, std::size_t alignment) override;
+
+    static cuda_host_pinned_memory_resource& get() noexcept;
 
 private:    
     cuda_host_pinned_memory_resource() = default;

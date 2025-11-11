@@ -3,6 +3,7 @@
 #pragma once
 
 #include <xmipp4/core/hardware/device.hpp>
+#include <xmipp4/core/hardware/memory_resource.hpp>
 
 #include <memory>
 
@@ -15,7 +16,7 @@ class cuda_device final
     : public device
 {
 public:
-    explicit cuda_device(int device);
+    explicit cuda_device(int device_index);
     cuda_device(const cuda_device &other) = delete;
     cuda_device(cuda_device &&other) = delete;
     ~cuda_device() override = default;

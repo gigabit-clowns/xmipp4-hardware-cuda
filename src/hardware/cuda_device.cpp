@@ -5,6 +5,8 @@
 #include <xmipp4/cuda/hardware/cuda_device_queue.hpp>
 #include <xmipp4/cuda/hardware/cuda_event.hpp>
 
+#include <xmipp4/core/platform/assert.hpp>
+
 #include "cuda_host_pinned_memory_resource.hpp"
 #include "cuda_device_memory_resource.hpp"
 
@@ -15,8 +17,8 @@ namespace xmipp4
 namespace hardware
 {
 
-cuda_device::cuda_device(int device)
-    : m_device(device)
+cuda_device::cuda_device(int device_index)
+    : m_device_index(device_index)
     , m_device_local_memory_resource(
         std::make_unique<cuda_device_memory_resource>(*this)
     )
@@ -25,7 +27,7 @@ cuda_device::cuda_device(int device)
 
 int cuda_device::get_index() const noexcept
 {
-    return m_device;
+    return m_device_index;
 }
 
 void cuda_device::enumerate_memory_resources(

@@ -31,7 +31,8 @@ public:
 
     memory_resource_kind get_kind() const noexcept override;
 
-    std::shared_ptr<memory_heap> create_memory_heap() override;
+    std::shared_ptr<memory_heap> 
+    create_memory_heap(std::size_t size, std::size_t alignment) override;
 
 private:
     std::reference_wrapper<cuda_device> m_device;
