@@ -4,10 +4,10 @@
 
 #include <xmipp4/cuda/hardware/cuda_error.hpp>
 #include <xmipp4/cuda/hardware/cuda_device.hpp>
-#include <xmipp4/cuda/hardware/cuda_buffer.hpp>
 #include <xmipp4/core/platform/assert.hpp>
 #include <xmipp4/core/platform/constexpr.hpp>
 #include <xmipp4/core/memory/align.hpp>
+#include <xmipp4/core/hardware/buffer.hpp>
 
 #include "cuda_host_pinned_memory_resource.hpp"
 
@@ -50,8 +50,7 @@ std::shared_ptr<buffer> cuda_host_pinned_memory_heap::create_buffer(
         throw std::out_of_range("Allocation exceeds heap bounds");
     }
 
-    return std::make_shared<cuda_buffer>(
-        nullptr,
+    return std::make_shared<buffer>(
         memory::offset_bytes(m_data, offset),
         size,
         cuda_host_pinned_memory_resource::get(),
