@@ -41,7 +41,7 @@ cuda_host_pinned_memory_resource::create_memory_heap(
 	if (alignment > get_max_heap_alignment())
 	{
 		throw std::invalid_argument(
-			"alignment exceeds the maximum alignment guaranteed by the memory "
+			"The alignment exceeds the maximum alignment guaranteed by the memory "
 			"resource"
 		);
 	}
