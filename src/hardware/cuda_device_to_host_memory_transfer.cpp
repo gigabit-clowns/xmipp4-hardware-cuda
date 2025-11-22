@@ -5,8 +5,9 @@
 #include <xmipp4/cuda/hardware/cuda_device_queue.hpp>
 #include <xmipp4/cuda/hardware/cuda_buffer.hpp>
 #include <xmipp4/core/hardware/buffer.hpp>
-
-#include "cuda_copy_bytes.hpp"
+#include <xmipp4/core/hardware/copy_region.hpp>
+#include <xmipp4/core/memory/align.hpp>
+#include <xmipp4/core/logger.hpp>
 
 #include <stdexcept>
 
@@ -15,71 +16,42 @@ namespace xmipp4
 namespace hardware
 {
 
-void cuda_device_to_host_memory_transfer::copy(
-    const buffer &source, 
-    buffer &destination,
-    span<const copy_region> regions, 
-    device_queue *queue
+const void* cuda_device_to_host_memory_transfer::get_source_pointer(
+	const buffer &source
 ) const
 {
-    cuda_device_queue *cuda_queue = nullptr;
-    if (queue)
-    {
-        cuda_queue = &dynamic_cast<cuda_device_queue&>(*queue);
-    }
+	const auto *cuda_source = 
+		dynamic_cast<const cuda_buffer*>(&source);
+	if (!cuda_source)
+	{
+		throw std::invalid_argument("Source buffer is not a cuda_buffer.");
+	}
 
-    copy(
-        dynamic_cast<const cuda_buffer&>(source),
-        destination,
-        regions,
-        cuda_queue
-    );
+	const auto *ptr = cuda_source->get_device_ptr();
+	if (!ptr)
+	{
+		throw std::invalid_argument(
+			"Source buffer is not device accessible."
+		);
+	}
+
+	return ptr;
 }
 
-void cuda_device_to_host_memory_transfer::copy(
-    const cuda_buffer &source, 
-    buffer &destination,
-    span<const copy_region> regions, 
-    cuda_device_queue *queue
+void* cuda_device_to_host_memory_transfer::get_destination_pointer(
+	buffer &destination
 ) const
 {
-    const auto *src_ptr = source.get_device_ptr();
-    if (!src_ptr)
-    {
-        throw std::invalid_argument(
-            "Source buffer is not device accessible."
-        );
-    }
+	auto *ptr = destination.get_host_ptr();
+	if (!ptr)
+	{
+		throw std::invalid_argument(
+			"Destination buffer is not host accessible."
+		);
+	}
 
-    auto *dst_ptr = destination.get_host_ptr();
-    if (!dst_ptr)
-    {
-        throw std::invalid_argument(
-            "Destination buffer is not host accessible."
-        );
-    }
+	return ptr;
+} 
 
-    cudaStream_t stream_handle = nullptr;
-    if (queue)
-    {
-        stream_handle = queue->get_handle();
-    }
-
-    const auto src_size = source.get_size();
-    const auto dst_size = destination.get_size();
-    for (const auto &region : regions)
-    {
-        cuda_copy_bytes(
-            src_ptr,
-            src_size, 
-            dst_ptr,
-            dst_size, 
-            region, 
-            cudaMemcpyDeviceToHost,
-            stream_handle
-        );
-    }
-}
-    
 } // namespace hardware
 } // namespace xmipp4

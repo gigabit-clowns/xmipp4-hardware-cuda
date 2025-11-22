@@ -2,39 +2,22 @@
 
 #pragma once
 
-#include <xmipp4/core/hardware/memory_transfer.hpp>
+#include "cuda_memory_transfer.hpp"
 
 namespace xmipp4 
 {
 namespace hardware
 {
 
-class cuda_device_queue;
-class cuda_buffer;
-
-class cuda_host_to_device_memory_transfer
-    : public memory_transfer
+class cuda_host_to_device_memory_transfer final
+    : public cuda_memory_transfer
 {
 public:
-    cuda_host_to_device_memory_transfer() = default;
-    ~cuda_host_to_device_memory_transfer() override = default;
+	cuda_host_to_device_memory_transfer() = default;
+	~cuda_host_to_device_memory_transfer() override = default;
 
-    void copy(
-        const buffer &source, 
-        buffer &destination,
-        span<const copy_region> regions, 
-        device_queue *queue
-    ) const override;
-    
-    void copy(
-        const buffer &source, 
-        cuda_buffer &destination,
-        span<const copy_region> regions, 
-        cuda_device_queue *queue
-    ) const;
-
-private:
-    int m_direction;
+	const void* get_source_pointer(const buffer &source) const override;
+	void* get_destination_pointer(buffer &destination) const override; 
 
 };
 
