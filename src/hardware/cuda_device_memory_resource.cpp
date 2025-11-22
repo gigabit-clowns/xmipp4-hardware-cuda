@@ -21,8 +21,7 @@ cuda_device_memory_resource::cuda_device_memory_resource(
 
 cuda_device* cuda_device_memory_resource::get_target_device() const noexcept
 {
-	cuda_device &device = m_device.get();
-	return &device;
+	return &(m_device.get());
 }
 
 memory_resource_kind cuda_device_memory_resource::get_kind() const noexcept
