@@ -24,6 +24,12 @@ backend_priority cuda_device_to_device_memory_transfer_backend::get_suitability(
     {
         return backend_priority::unsupported;
     }
+    
+    if (&source == &destination)
+    {
+        return backend_priority::optimal;
+    }
+
     if (!dynamic_cast<const cuda_device_memory_resource*>(&destination))
     {
         return backend_priority::unsupported;

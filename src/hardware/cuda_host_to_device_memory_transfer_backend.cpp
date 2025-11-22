@@ -26,17 +26,17 @@ backend_priority cuda_host_to_device_memory_transfer_backend::get_suitability(
         return backend_priority::unsupported;
     }
 
-    if (dynamic_cast<const cuda_host_pinned_memory_resource*>(&source))
+    if (&source == &cuda_host_pinned_memory_resource::get())
     {
         return backend_priority::optimal;
     }
 
-    if (!is_host_accessible(source.get_kind()))
+    if (is_host_accessible(source.get_kind()))
     {
-        return backend_priority::unsupported;
+        return backend_priority::normal;
     }
 
-    return backend_priority::normal;
+    return backend_priority::unsupported;
 }
 
 std::shared_ptr<memory_transfer> 
