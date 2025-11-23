@@ -1,8 +1,8 @@
-# xmipp4-hardware-cuda
+# xmipp4-cuda
 CUDA hardware backend for xmipp4
 
 ## SonarCloud status
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=gigabit-clowns_xmipp4-hardware-cuda&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=gigabit-clowns_xmipp4-cuda)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=gigabit-clowns_xmipp4-cuda&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=gigabit-clowns_xmipp4-cuda)
 
 ### Ratings
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=gigabit-clowns_xmipp4-cuda&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=gigabit-clowns_xmipp4-cuda)
