@@ -1,9 +1,9 @@
 [build-system]
 requires = [
+	"rapids-build-backend==0.4.1",
     "scikit-build-core==0.10",
-    "xmipp4-core @ https://github.com/gigabit-clowns/xmipp4-core/archive/refs/heads/main.zip" # TODO replace when xmipp4-core is in PyPI
 ]
-build-backend = "scikit_build_core.build"
+build-backend = "rapids_build_backend.build"
 
 [project]
 name = "xmipp4-cuda"
@@ -30,11 +30,20 @@ license = {file = "LICENSE"}
 
 requires-python = ">=3.7"
 dependencies = [ 
+	"nvidia-cuda-nvcc-cu12",
     "xmipp4-core @ https://github.com/gigabit-clowns/xmipp4-core/archive/refs/heads/main.zip" # TODO replace when xmipp4-core is in PyPI
 ]
 
 [project.urls]
 Homepage = "https://github.com/gigabit-clowns/xmipp4-cuda"
+
+[tool.rapids-build-backend]
+build-backend = "scikit_build_core.build"
+requires = [
+	"nvidia-cuda-nvcc-cu12",
+    "nvidia-cuda-runtime-cu12",
+    "xmipp4-core @ https://github.com/gigabit-clowns/xmipp4-core/archive/refs/heads/main.zip" # TODO replace when xmipp4-core is in PyPI
+]
 
 [tool.scikit-build]
 experimental=true # For wheel.install-dir
