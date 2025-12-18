@@ -40,11 +40,9 @@ cuda_device::get_memory_resource(memory_resource_affinity affinity)
 		return *m_device_local_memory_resource;
 	case memory_resource_affinity::host:
 		return cuda_host_pinned_memory_resource::get();
-	
 	default:
 		throw std::invalid_argument("Unknown memory resource affinity");
 	}
-
 }
 
 std::shared_ptr<device_queue> cuda_device::create_device_queue()
